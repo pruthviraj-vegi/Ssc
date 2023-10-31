@@ -3,7 +3,6 @@ import { NavigationContainer } from '@react-navigation/native';
 import { createMaterialBottomTabNavigator } from '@react-navigation/material-bottom-tabs';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 
-
 import Home from './components/Home';
 import Profile from './components/Profile';
 import Notifications from './components/Notification';

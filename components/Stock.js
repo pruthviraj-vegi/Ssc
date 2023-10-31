@@ -1,7 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, TextInput, View, Text, KeyboardAvoidingView, TouchableOpacity, ActivityIndicator } from 'react-native';
+import {
+    TextInput, View, Text, Button, KeyboardAvoidingView, Modal,
+    TouchableOpacity, ActivityIndicator
+} from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import Axios from 'axios';
+import { BarCodeScanner } from 'expo-barcode-scanner';
+import { styles } from './Stockstyles';
 
 function Stocks() {
     const [code, setCode] = useState("");
@@ -16,6 +21,7 @@ function Stocks() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
     const [debouncedCode, setDebouncedCode] = useState("");
+    const [barcodeScannerVisible, setBarcodeScannerVisible] = useState(false);
 
     const debouncedFetchData = (debouncedCode) => {
         fetchDataFromAPI(debouncedCode);
@@ -43,7 +49,7 @@ function Stocks() {
         setError(null);
 
         try {
-            const apiUrl = `http://192.168.0.123:8000/api/stock/${code}`;
+            const apiUrl = `http://192.168.236.119:8000/api/stock/${code}`;
             const response = await Axios.get(apiUrl);
             const stock_data = response.data;
             setBarcode(stock_data.barcode);
@@ -56,11 +62,11 @@ function Stocks() {
             setCome(stock_data.commision);
         } catch (error) {
             setError('Error fetching data');
-            setNull()
+            setNull();
         } finally {
             setLoading(false);
         }
-    };
+    }
 
     const setNull = () => {
         setBarcode('');
@@ -72,6 +78,52 @@ function Stocks() {
         setRate('');
         setCome('');
     }
+
+    const toggleBarcodeScanner = () => {
+        setBarcodeScannerVisible(!barcodeScannerVisible);
+    };
+
+    // barcode data from hear
+    const [hasPermission, setHasPermission] = useState(null);
+    const [text, setText] = useState('Not yet scanned')
+
+    const askForCameraPermission = () => {
+        (async () => {
+            const { status } = await BarCodeScanner.requestPermissionsAsync();
+            setHasPermission(status === 'granted');
+        })()
+    }
+
+    // Request Camera Permission
+    useEffect(() => {
+        askForCameraPermission();
+    }, []);
+
+
+    // What happens when we scan the bar code
+    const handleBarCodeScanned = ({ type, data }) => {
+        // setScanned(true);
+        // setText(data)
+        toggleBarcodeScanner()
+        setCode('')
+        fetchDataFromAPI(data)
+    };
+
+    // Check permissions and return the screens
+    if (hasPermission === null) {
+        return (
+            <View style={styles.container}>
+                <Text>Requesting for camera permission</Text>
+            </View>)
+    }
+    if (hasPermission === false) {
+        return (
+            <View style={styles.container}>
+                <Text style={{ margin: 10 }}>No access to camera</Text>
+                <Button title={'Allow Camera'} onPress={() => askForCameraPermission()} />
+            </View>)
+    }
+
 
     return (
         <>
@@ -99,12 +151,35 @@ function Stocks() {
                     value={code}
                     onChangeText={text => setCode(text)}
                 />
-                <TouchableOpacity>
+                <TouchableOpacity onPress={toggleBarcodeScanner}>
                     <View style={styles.addWrapper}>
                         <MaterialCommunityIcons name="barcode" color='black' size={26} />
                     </View>
                 </TouchableOpacity>
             </KeyboardAvoidingView>
+
+            {/* Barcode  scanner model from hear */}
+            <Modal visible={barcodeScannerVisible} animationType="slide">
+                <View style={styles.barcodePage}>
+                    <View style={styles.barcodebox}>
+                        <BarCodeScanner
+                            onBarCodeScanned={handleBarCodeScanned}
+                            style={{ height: 450, width: '100%' }}
+                        />
+                    </View>
+
+                </View>
+                <View style={styles.closeButtonContainer}>
+                    <TouchableOpacity
+                        style={styles.closeButton}
+                        onPress={toggleBarcodeScanner}
+                    >
+                        <View style={styles.circle}>
+                            <MaterialCommunityIcons name="window-close" color="blue" size={26} />
+                        </View>
+                    </TouchableOpacity>
+                </View>
+            </Modal>
         </>
     );
 }
@@ -117,75 +192,5 @@ const NormalStock = ({ label, value, bold = false }) => {
         </View>
     )
 }
-
-const styles = StyleSheet.create({
-    stocks: {
-        top: 10,
-        padding: 20,
-    },
-    heading: {
-        fontSize: 50,
-        fontWeight: 'bold',
-    },
-    stockRows: {
-        flexDirection: "row",
-        justifyContent: 'space-between',
-        marginHorizontal: 50,
-        margin: 10
-    },
-    stockHeading: {
-        fontSize: 20,
-        fontWeight: 'bold'
-    },
-    barcodeValue: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        alignItems: 'center',
-        textAlign: 'center',
-        justifyContent: "space-around",
-        color: 'blue',
-    },
-    stockValue: {
-        fontSize: 25,
-        fontWeight: 'bold'
-    },
-    boldStockValue: {
-        fontSize: 40,
-        fontWeight: 'bold',
-        color: 'blue'
-    },
-    writeTaskWrapper: {
-        position: 'absolute',
-        bottom: 10,
-        width: '100%',
-        flexDirection: 'row',
-        justifyContent: 'space-around',
-        alignItems: 'center'
-    },
-    input: {
-        paddingVertical: 10,
-        paddingHorizontal: 15,
-        backgroundColor: '#FFF',
-        borderRadius: 30,
-        borderColor: 'black',
-        borderWidth: 0.5,
-        width: 250,
-        fontSize: 25,
-        fontWeight: 'bold'
-    },
-    addWrapper: {
-        width: 50,
-        height: 50,
-        backgroundColor: "#FFF",
-        borderRadius: 60,
-        justifyContent: 'center',
-        alignItems: 'center',
-        borderWidth: 0.5,
-    },
-    errorText: {
-        color: 'red',
-        textAlign: 'center',
-    },
-});
 
 export default Stocks;
