@@ -9,6 +9,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { styles } from './Stockstyles';
 
 function Stocks() {
+    const ipAddress = '192.168.0.123';
     const [code, setCode] = useState("");
     const [barcode, setBarcode] = useState("");
     const [main, setMain] = useState("");
@@ -44,39 +45,42 @@ function Stocks() {
     }, [debouncedCode]);
 
     const fetchDataFromAPI = async (code) => {
-        console.log(code)
         setLoading(true);
         setError(null);
-
         try {
-            const apiUrl = `http://192.168.236.119:8000/api/stock/${code}`;
+            const apiUrl = `http://${ipAddress}:8000/api/stock/${code}`;
             const response = await Axios.get(apiUrl);
             const stock_data = response.data;
-            setBarcode(stock_data.barcode);
-            setMain(stock_data.mainType);
-            setSub(stock_data.subType);
-            setQty(stock_data.quantity);
-            setMrp(stock_data.sellingPrice);
-            setDisc(stock_data.discount);
-            setRate(stock_data.discountPrice);
-            setCome(stock_data.commision);
+            setData(stock_data)
         } catch (error) {
             setError('Error fetching data');
-            setNull();
+            setData();
         } finally {
             setLoading(false);
         }
-    }
+    };
 
-    const setNull = () => {
-        setBarcode('');
-        setMain('');
-        setSub('');
-        setQty('');
-        setMrp('');
-        setDisc('');
-        setRate('');
-        setCome('');
+    const setData = (data = NaN) => {
+        if (data) {
+            setBarcode(data.barcode);
+            setMain(data.mainType);
+            setSub(data.subType);
+            setQty(data.quantity);
+            setMrp(data.sellingPrice);
+            setDisc(data.discount);
+            setRate(data.discountPrice);
+            setCome(data.commision);
+        }
+        else {
+            setBarcode('');
+            setMain('');
+            setSub('');
+            setQty('');
+            setMrp('');
+            setDisc('');
+            setRate('');
+            setCome('');
+        }
     }
 
     const toggleBarcodeScanner = () => {
@@ -85,7 +89,6 @@ function Stocks() {
 
     // barcode data from hear
     const [hasPermission, setHasPermission] = useState(null);
-    const [text, setText] = useState('Not yet scanned')
 
     const askForCameraPermission = () => {
         (async () => {
@@ -102,8 +105,6 @@ function Stocks() {
 
     // What happens when we scan the bar code
     const handleBarCodeScanned = ({ type, data }) => {
-        // setScanned(true);
-        // setText(data)
         toggleBarcodeScanner()
         setCode('')
         fetchDataFromAPI(data)
@@ -116,6 +117,7 @@ function Stocks() {
                 <Text>Requesting for camera permission</Text>
             </View>)
     }
+
     if (hasPermission === false) {
         return (
             <View style={styles.container}>
@@ -123,7 +125,6 @@ function Stocks() {
                 <Button title={'Allow Camera'} onPress={() => askForCameraPermission()} />
             </View>)
     }
-
 
     return (
         <>
