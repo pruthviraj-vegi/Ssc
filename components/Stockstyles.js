@@ -2,11 +2,11 @@ import { StyleSheet } from 'react-native';
 
 export const styles = StyleSheet.create({
     stocks: {
-        top: 10,
-        padding: 20,
-    },
+        margin: 20,
+        paddingTop: 30,
+      },
     heading: {
-        fontSize: 50,
+        fontSize: 30,
         fontWeight: 'bold',
     },
     stockRows: {
@@ -20,7 +20,7 @@ export const styles = StyleSheet.create({
         fontWeight: 'bold'
     },
     barcodeValue: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
         alignItems: 'center',
         textAlign: 'center',
@@ -28,11 +28,11 @@ export const styles = StyleSheet.create({
         color: 'blue',
     },
     stockValue: {
-        fontSize: 25,
+        fontSize: 20,
         fontWeight: 'bold'
     },
     boldStockValue: {
-        fontSize: 40,
+        fontSize: 30,
         fontWeight: 'bold',
         color: 'blue'
     },
@@ -68,6 +68,9 @@ export const styles = StyleSheet.create({
         color: 'red',
         textAlign: 'center',
     },
+    barcodeDetails: {
+        display: 'flex',
+    },
     barcodePage: {
         flex: 1,
         backgroundColor: '#fff',
@@ -75,6 +78,7 @@ export const styles = StyleSheet.create({
         justifyContent: 'flex-start',
     },
     barcodebox: {
+        position: 'relative',
         alignItems: 'center',
         justifyContent: 'center',
         height: 150,
@@ -82,19 +86,25 @@ export const styles = StyleSheet.create({
         overflow: 'hidden',
         borderRadius: 30,
         backgroundColor: 'lightgray',
-        marginVertical:50,
+        marginVertical: 50,
     },
-      closeButtonContainer: {
+    scanningLine: {
+        position: 'absolute',
+        backgroundColor: 'rgba(255, 0, 0, 0.5)',
+        width: '100%',
+        height: 2,
+    },
+    closeButtonContainer: {
         position: 'absolute',
         bottom: '8%', // Adjust the vertical position
         right: '5%',  // Adjust the horizontal position
-      },
-      circle: {
+    },
+    circle: {
         width: 50,  // Adjust the size of the circle
         height: 50, // Adjust the size of the circle
         backgroundColor: 'lightgray', // Background color of the circle
         borderRadius: 25, // Make it a circle
         justifyContent: 'center',
         alignItems: 'center',
-      },
+    }
 });

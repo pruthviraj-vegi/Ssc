@@ -5,15 +5,15 @@ import { MaterialCommunityIcons } from '@expo/vector-icons';
 
 import Home from './components/Home';
 import Profile from './components/Profile';
-import Notifications from './components/Notification';
 import Stocks from './components/Stock';
+import Settings from './components/Settings';
 
 const Tab = createMaterialBottomTabNavigator();
 
 function MyTabs() {
   return (
     <Tab.Navigator
-      initialRouteName="Stocks"
+      initialRouteName="Profile"
       activeColor="blue"
       labelStyle={{ fontSize: 12 }}
       style={{ backgroundColor: 'tomato' }}
@@ -29,22 +29,22 @@ function MyTabs() {
         }}
       />
       <Tab.Screen
+        name="Settings"
+        component={Settings}
+        options={{
+          tabBarLabel: 'Settings',
+          tabBarIcon: ({ color }) => (
+            <MaterialCommunityIcons name="cog" color={color} size={26} />
+          ),
+        }}
+      />
+      <Tab.Screen
         name="Profile"
         component={Profile}
         options={{
           tabBarLabel: 'Profile',
           tabBarIcon: ({ color }) => (
             <MaterialCommunityIcons name="account" color={color} size={26} />
-          ),
-        }}
-      />
-      <Tab.Screen
-        name="Notifications"
-        component={Notifications}
-        options={{
-          tabBarLabel: 'Notifications',
-          tabBarIcon: ({ color }) => (
-            <MaterialCommunityIcons name="bell" color={color} size={26} />
           ),
         }}
       />
@@ -58,7 +58,6 @@ function MyTabs() {
           ),
         }}
       />
-      
     </Tab.Navigator>
   );
 }
